@@ -1,0 +1,5 @@
+config BR2_PACKAGE_PANGOFLY_GESTURE
+    bool "pangofly_gesture"
+    depends on BR2_PACKAGE_PANGOFLY
+    help
+      Gesture recognition application using Pangofly communication
