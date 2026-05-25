@@ -1,5 +1,22 @@
 # K230 Linux SDK
 
+## Pangofly
+
+Pangofly 是一个专为自动驾驶场景设计的进程间通信（IPC）框架，采用共享内存技术实现高效的数据传输，支持同地址映射确保零拷贝通信。
+
+已在 K230 Linux 平台上成功运行共享内存多进程通信测试：
+- Writer 和 Reader 进程正常通信
+- 测试完成 10 条消息交换
+- 所有消息成功接收，序列号正确递增
+
+测试命令：
+```bash
+cd /root/app/pangofly
+./pangofly_test
+```
+
+---
+
 >This document uses the k230d_canmv_defconfig configuration as an example. If you use other configurations, replace k230d_canmv_defconfig with correct names. All the configurations supported by this sdk,  can be found in  buildroot-overlay/configs directory.
 
 ## Install toolchain and dependencies

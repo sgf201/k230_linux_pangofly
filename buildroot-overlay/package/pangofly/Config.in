@@ -1,0 +1,4 @@
+config BR2_PACKAGE_PANGOFLY
+	bool "pangofly"
+	help
+	  Pangofly shared memory communication library for RT-Smart and Linux
