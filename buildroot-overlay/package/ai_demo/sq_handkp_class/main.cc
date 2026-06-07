@@ -28,6 +28,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cstring>
+#include <cerrno>
 #include <fcntl.h>
 #include <unistd.h>
 #include "utils.h"
@@ -61,21 +62,25 @@ void send_command(const string& cmd) {
     int len = snprintf(buf, sizeof(buf), "%s%s%s\n", PROTOCOL_START, cmd.c_str(), PROTOCOL_END);
     
     // 每次都尝试打开串口（解决开机时串口未就绪问题）
-    int fd = open("/dev/ttyS1", O_WRONLY | O_NOCTTY | O_NDELAY);
+    int fd = open("/dev/ttyS0", O_WRONLY | O_NOCTTY | O_NDELAY);
     if (fd >= 0) {
         write(fd, buf, len);
         close(fd);
+        fprintf(stdout, "[UART] Sent to ttyS0: %s", buf);
     } else {
+        fprintf(stdout, "[UART] ttyS0 open failed (errno=%d: %s)\n", errno, strerror(errno));
         // 尝试其他串口
-        fd = open("/dev/ttyS0", O_WRONLY | O_NOCTTY | O_NDELAY);
+        fd = open("/dev/ttyS1", O_WRONLY | O_NOCTTY | O_NDELAY);
         if (fd >= 0) {
             write(fd, buf, len);
             close(fd);
+            fprintf(stdout, "[UART] Sent to ttyS1: %s", buf);
+        } else {
+            fprintf(stdout, "[UART] ttyS1 open failed (errno=%d: %s)\n", errno, strerror(errno));
         }
     }
     
     // 同时输出到 stdout（方便 SSH 调试）
-    fprintf(stdout, "%s", buf);
     fflush(stdout);
 }
 
