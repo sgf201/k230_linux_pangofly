@@ -60,11 +60,18 @@ void send_command(const string& cmd) {
     char buf[256];
     int len = snprintf(buf, sizeof(buf), "%s%s%s\n", PROTOCOL_START, cmd.c_str(), PROTOCOL_END);
     
-    // 写入串口 ttyS0（ESP 通过串口接收）
-    int fd = open("/dev/ttyS0", O_WRONLY | O_NOCTTY);
-    if (fd > 0) {
+    // 每次都尝试打开串口（解决开机时串口未就绪问题）
+    int fd = open("/dev/ttyS0", O_WRONLY | O_NOCTTY | O_NDELAY);
+    if (fd >= 0) {
         write(fd, buf, len);
         close(fd);
+    } else {
+        // 尝试其他串口
+        fd = open("/dev/ttyS1", O_WRONLY | O_NOCTTY | O_NDELAY);
+        if (fd >= 0) {
+            write(fd, buf, len);
+            close(fd);
+        }
     }
     
     // 同时输出到 stdout（方便 SSH 调试）
